@@ -6,7 +6,7 @@ class SYM(REP):
 
     def __init__(self, *args):
         self.population = args[0]
-         
+        print("SELF ", self.population)
     #inherit this from superclass
     #def reset(self, (f, args, output)):
     #    return (f, args, f(*args)) # resample (reset)
@@ -15,8 +15,11 @@ class SYM(REP):
     def perturb(self, entry):
 
         typ, output = entry
-
-        if len(self.population) == 1: # if len of input sequence is 1
+        print('pop ', self.population)
+        if len(self.population) < 1:
+            raise ValueError("Nothing to choose from.")
+			
+        elif len(self.population) == 1: # if len of input sequence is 1
             perturbed_output = output
         else:
             perturbed_output = output

@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../solver')
+sys.path.append('../solverS')
 sys.path.append('../tracer')
 sys.path.append('../analysis')
 
