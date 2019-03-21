@@ -156,7 +156,7 @@ def randomPerm3(S): # random pick of matrix square
 		#	y = random.choice(range(weeks))
 				
 		if S[x][y] == None:
-			temp = getGame2(x,y,S)
+			temp = getGame3(x,y,S)
 			S[x][y] = temp
 			if temp != 0:
 				if temp > 0:
@@ -222,15 +222,16 @@ def getGame3(x,y,S):
 
 			available = [k for k in available if S[(abs(k)-1)][y] != None]
 	
-	if len(available) > 3:
-		highest = 0
-		marker = 0
-		for k in available:
-			temp = abs(costMat[x][y] - costMat[abs(k-1)][y])
-			if temp > highest:
-				highest = temp
-				marker = k
-		available.remove(k)
+	#trying to take cost matrix into account
+	#if len(available) > 3:
+	#	highest = 0
+	#	marker = 0
+	#	for k in available:
+	#		temp = abs(costMat[x][y] - costMat[abs(k-1)][y])
+	#		if temp > highest:
+	#			highest = temp
+	#			marker = k
+	#	available.remove(k)
 		
 	if len(available) < 1:
 		return 0
