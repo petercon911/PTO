@@ -7,8 +7,8 @@ def start():
 	S = [[None for x in range(weeks)] for x in range(teams)]
 	
 	#S = randomPerm(S)
-	#S = randomPerm2(S)
-	S = randomPerm3(S)
+	#S = randomPerm2(S) #for getGame2, currently error prone, trying number then removing
+	S = randomPerm3(S)	#for getGame3, works, creating list of available then random
 	
 	print("end", S)
 	#pdb.set_trace()
@@ -170,26 +170,37 @@ def randomPerm3(S): # random pick of matrix square
 #Not used	
 @random_function	
 def randomPerm2(S):
-	teamLength = [k for k in range(teams)]
 	
-	for i in range(teams):
-		o = random.choice(teamLength)
-		weekLength = [k for k in range(weeks)]
-		for j in range(weeks):
-			#print(weekLength)
-			
-			p = random.choice(weekLength)
-			if S[o][p] == None:
-				temp = getGame2(o,p,S)
-				print(o, '  ', p, '  ', temp)
-				S[o][p] = temp
+	while not schedule_full(S):
+		#print("HIIIIIIIIIIIIIIIIIIII")
+		#print(S)
+		#matrix = [[None for x in range(weeks)] for x in range(teams)] 
+		spaceNone = []
+		for team in range(teams):
+			for week in range(weeks):
+				if S[team][week] == None:
+					spaceNone.append((team,week))
+		#print('     AAA    ', spaceNone)
+		if len(spaceNone) == 0:
+			raise ValueError("HI")
+		print(S)
+		print(spaceNone)
+		sp = spaceNone[:]
+		x,y = random.choice(sp)
+		#while S[x][y] != None:
+		#	x = random.choice(range(teams))
+		#	y = random.choice(range(weeks))
+				
+		if S[x][y] == None:
+			temp = getGame2(x,y,S)
+			S[x][y] = temp
+			if temp != 0:
 				if temp > 0:
-					S[abs(temp)-1][j] = -(o + 1)
+					S[abs(temp)-1][y] = -(x + 1)
 				else:
-					S[abs(temp)-1][j] = o + 1
-			
-			weekLength.remove(p)
-		teamLength.remove(o)
+					S[abs(temp)-1][y] = x + 1
+	
+		
 	return S
 
 #Works correctly at reducing available and then making random choice if available not 0
