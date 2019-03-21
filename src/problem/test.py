@@ -15,7 +15,7 @@ def start():
 
 	return S
 	
-
+#Not used
 def randomPerm(S):
 	for i in range(teams):
 		for j in range(weeks):
@@ -28,7 +28,7 @@ def randomPerm(S):
 	return S
 
 
-	
+#This generator is not used	
 @random_function	
 def getGame(x,y,S):
 	easyR = [[None for x in range(weeks)] for x in range(teams)]
@@ -131,6 +131,7 @@ def getGame(x,y,S):
 		
 #	return rand
 	
+#Used to select the matrix tile
 @random_function
 def randomPerm3(S): # random pick of matrix square
 
@@ -165,7 +166,8 @@ def randomPerm3(S): # random pick of matrix square
 	
 		
 	return S
-	
+
+#Not used	
 @random_function	
 def randomPerm2(S):
 	teamLength = [k for k in range(teams)]
@@ -190,6 +192,7 @@ def randomPerm2(S):
 		teamLength.remove(o)
 	return S
 
+#Works correctly at reducing available and then making random choice if available not 0
 def getGame3(x,y,S):
 	available = [i for i in range(-teams, teams + 1) if i != 0 and abs(i) != (x + 1)]
 	
@@ -234,6 +237,7 @@ def getGame3(x,y,S):
 	else:
 		return random.choice(available)
 	
+#Not working consistently, causes pop to appear empty in PTO
 @random_function
 def getGame2(x,y,S):
 	# build available without 0 or the current team
