@@ -1,0 +1,6 @@
+#test.py is the main file
+python test.py 0 0 0 0 # in order; generator, solver(HC then EA), teamsize(0 = 4, etc), random.seed
+write to a file in a single line, tabulated, in this order; generator, solver, teamSize, runNo, budjet, solution, fitness, history, violations, costs
+resultsPlot.py reads this data back, it is designed to go through both generators, solvers, teamsizes, seeds. can be modified in the file loops
+reduces the objective, violation and cost history arrays to only when they change value and captures the location of the change
+ 
