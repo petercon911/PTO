@@ -1,0 +1,6 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+f1=open('./ResultsTest2.dat', 'r')
+while fl.readline() != 'random3':
+	print('x')

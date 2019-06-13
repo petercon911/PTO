@@ -1,19 +1,36 @@
-from PTO import random,random_function,solve,plot_runs, compare_all, make_table, stat_summary, plot_scalability
+from PTO import random,random_function,solve, plot_runs, compare_all, make_table, stat_summary, plot_scalability
 import math, time, pdb
 import copy
-random.seed(0)
+#import matplotlib.pyplot as plt
+import numpy as np
+import sys
+#random.seed(0)
 
-def start():
-	S = [[None for x in range(weeks)] for x in range(teams)]
+def start1():
+	S = np.array([[None for x in range(weeks)] for x in range(teams)])
+	
+	#S = randomPerm(S)
+	S = randomPerm2(S) #for getGame2, currently error prone, trying number then removing
+	#S = randomPerm3(S)	#for getGame3, works, creating list of available then random
+	
+	#print("end", S)
+	#pdb.set_trace()
+
+	return S
+	
+
+def start2():
+	S = np.array([[None for x in range(weeks)] for x in range(teams)])
 	
 	#S = randomPerm(S)
 	#S = randomPerm2(S) #for getGame2, currently error prone, trying number then removing
 	S = randomPerm3(S)	#for getGame3, works, creating list of available then random
 	
-	print("end", S)
+	#print("end", S)
 	#pdb.set_trace()
 
 	return S
+	
 	
 #Not used
 def randomPerm(S):
@@ -147,8 +164,8 @@ def randomPerm3(S): # random pick of matrix square
 		#print('     AAA    ', spaceNone)
 		if len(spaceNone) == 0:
 			raise ValueError("HI")
-		print(S)
-		print(spaceNone)
+		#print(S)
+		#print(spaceNone)
 		sp = spaceNone[:]
 		x,y = random.choice(sp)
 		#while S[x][y] != None:
@@ -181,10 +198,7 @@ def randomPerm2(S):
 				if S[team][week] == None:
 					spaceNone.append((team,week))
 		#print('     AAA    ', spaceNone)
-		if len(spaceNone) == 0:
-			raise ValueError("HI")
-		print(S)
-		print(spaceNone)
+		
 		sp = spaceNone[:]
 		x,y = random.choice(sp)
 		#while S[x][y] != None:
@@ -219,10 +233,10 @@ def getGame3(x,y,S):
 	available = [k for k in available if abs(k) != (x + 1)] # cant play yourself
 	
 	if y > 2:
-		if b[y-1] != None and b[y-2] != None:
-			if b[y-1] <0 and b[y-2] <0:
+		if b[y-1] != None and b[y-2] != None and b[y-3] != None:
+			if b[y-1] <0 and b[y-2] <0 and b[y-3] < 0:
 				available = [k for k in available if k > 0] # no repreat home or away
-			if b[y-1] >0 and b[y-2] >0:
+			if b[y-1] >0 and b[y-2] >0 and b[y-3] >0:
 				available = [k for k in available if k < 0]
 			if abs(b[y-1]) == abs(b[y-2]):
 				available = [k for k in available if k != b[y-2]] # no consecutive games
@@ -268,8 +282,7 @@ def getGame2(x,y,S):
 	av = available[:]
 	
 	while len(av): 
-		if len(av) == 0:
-			raise ValueError("HI")
+		
 		
 		rand = random.choice(av)
 	#	print('RAND   ', rand)
@@ -282,10 +295,10 @@ def getGame2(x,y,S):
 			#for i in range(weeks):
 			#	z.append(S[abs(rand)-1][i]) # create opposite row
 				
-			if valid(a,b,S[abs(rand)-1],rand,opp): 	# check if rand and opp are valid
+			if valid(b,a,S[abs(rand)-1],rand,opp): 	# check if rand and opp are valid
 				return rand
 			
-		av.remove(rand) # remove rand from the check
+		av = [k for k in av if k != rand] # remove rand from the check
 			
 		#print(S)
 	
@@ -294,14 +307,15 @@ def getGame2(x,y,S):
 def valid(x,y,z,r,opp):
 	#print(r)
 	#print('z: ', z, 'x: ', x, 'y: ', y)
-	if r in x: # already game scheduled in week against this team
-		print('x')
+	if r in x: # already game sceduled in team season schedule
+		#print('y')
 		return False
-	elif r in y: # already game sceduled in team season schedule
-		print('y')
+	elif r in y: # already game scheduled in week against this team
+		#print('x')
 		return False
+
 	elif opp in z: # opposing team already has a game scheduled in their season
-		print('z')
+		#print('z')
 		return False
 	else:
 		return True
@@ -316,13 +330,16 @@ def cost(S):
 	totalCos = 0
 
 	
-	for team in S:
-		i = S.index(team)
+	for team in range(len(S)):
+		i = team
 		
-		for week in team:
-			if week == 00:
-				break
-			j = team.index(week)
+		for week in range(len(S[team])):
+			
+			j = week
+			#print(j)
+
+			startL = 0
+			destL = 2
 			#print(week)
 			if j is 0:
 				startL = i
@@ -330,18 +347,26 @@ def cost(S):
 				if S[i][j-1] > 0:
 					startL = i
 				else:
-					startL = abs(week) -1
+					startL = abs(S[team][week-1]) -1
 			
-			if j is len(team) - 1:
+			if j is len(S[team]):
 				destL = i
 			else:
-				if week > 0:
+			#	print('x')
+				if S[team][week] > 0:
 					destL = i
 				else:
-					destL = abs(week) -1
+			#		print(S[team][week])
+					destL = abs(S[team][week]) -1
 			#print(startL, '   ', destL)
-			totalCos += int(costMat[startL][destL])
-			
+			#print('cost', costMat[startL][destL])
+			totalCos += float(abs(int(costMat[startL][destL])))
+			if j is len(S[team]) - 1:
+				totalCos+= float(abs(int(costMat[destL][team])))
+		#print((abs(S[team][-1]) - 1), '   ', team)
+		#b = float(abs(costMat[(abs(S[team][-1])) - 1][team]))
+		#print('cost', b)
+		#totalCos += b
 	return (totalCos)
 
 def violations(S):
@@ -350,30 +375,26 @@ def violations(S):
 	for team in range(len(S)):
 		for week in range(len(S[team])):
 			if S[team][week] == 00:
-				counter+= 1
-				if counter > 0:
-					viol += 1000000000
-				if counter > 3:
-					viol += 100000000
-				if counter > 6:
-					viol += 100000000000
+				viol+= costNorm*2
+			if week > 2:	
+				if S[team][week-3] < 0 and S[team][week-2] < 0 and S[team][week-1] < 0 and  S[team][week] < 0:
 				
-			if S[team][week-3] < 0 and S[team][week-2] < 0 and S[team][week-1] < 0 and  S[team][week] < 0:
-				viol += 1000000
+					viol += costNorm*1
 				
-			if S[team][week-3] > 0 and S[team][week-2] > 0 and S[team][week-1] > 0 and  S[team][week] > 0:
-				viol += 1000000
+				if S[team][week-3] > 0 and S[team][week-2] > 0 and S[team][week-1] > 0 and  S[team][week] > 0:
+					viol += costNorm*1
+			if week > 0:	
+				if abs(S[team][week]) == abs(S[team][week-1]):
+					viol += costNorm*2
 	return viol
 	
 def fitness(S):
 
 	viol = violations(S)
-	
-	if viol == 0:
-		return - int(cost(S))
-		
-	else:
-		return - int(math.sqrt(cost(S)**2 + (fun(viol)**2)))
+	cos = cost(S)
+	violation.append(viol)
+	costs.append(cos)
+	return - (cos + viol)
 	
 	
 	
@@ -381,24 +402,156 @@ def schedule_full(S):
 	for team in S:
 		for week in team:
 			if week is None:
-				print("not full")
+				#print("not full")
 				return False
 				
 	return True
 	
-teams = 6
-weeks = (2 * teams) - 2
-costMat = [[0, 3010, 1120, 2010, 300, 1000], [3010, 0, 1230, 2010, 1120, 3010], [1120, 1230, 0, 1120, 100, 3030], [2010, 2010, 1120, 0, 220, 1110], [300, 1120, 100, 220, 0, 1120], [1000, 3010, 3030, 1110, 1120, 0]]
+def normalise_mat(M):
+	N = [[None for x in range(6)] for x in range(6)]
+	min = M[0][0]
+	max = 0
+	
+	for x in M:
+		for y in x:
+			if y < min and y != 0:
+				min = y
+			if y > max:
+				max = y
+				
+	for x in range(len(M)):
+		for y in range(len(M[x])):
+			#print(x,y)
+			if M[x][y] == 0:
+				N[x][y] = 0
+			else:
+				N[x][y] = (M[x][y] - min) / (min - max)
+	
+	return N
+	
+
+#costMat = [[0, 3010, 1120, 2010, 300, 1000], [3010, 0, 1230, 2010, 1120, 3010], [1120, 1230, 0, 1120, 100, 3030], [2010, 2010, 1120, 0, 220, 1110], [300, 1120, 100, 220, 0, 1120], [1000, 3010, 3030, 1110, 1120, 0]]
+costMat = [[0, 745, 665, 929],[745, 0, 80, 337],[665, 80, 0, 380],[929, 337, 380, 0]]
+costMat =  [[0,  745,  665,  929, 605,  521,  370,  587,  467,  670,  700, 1210, 2130, 1890, 1930, 1592],
+			[745,   0,   80,  337, 1090,  315,  567,  712,  871,  741, 1420, 1630, 2560, 2430, 2440, 2144],
+			[665,  80,    0,  380, 1020,  257,  501,  664,  808,  697, 1340, 1570, 2520, 2370, 2390, 2082],
+			[929, 337,  380,    0, 1380,  408,  622,  646,  878,  732, 1520, 1530, 2430, 2360, 2360, 2194],
+			[605, 1090, 1020, 1380,   0, 1010,  957, 1190, 1060, 1270,  966, 1720, 2590, 2270, 2330, 1982],
+			[521,  315,  257,  408, 1010,   0, 253,  410,  557,  451, 1140, 1320, 2260, 2110, 2130, 1829],
+			[370,  567,  501,  622,  957,  253,  0,  250,  311,  325,  897, 1090, 2040, 1870, 1890, 1580],
+			[587,  712,  664,  646, 1190,  410,  250,   0,  260,   86, 939,  916, 1850, 1730, 1740, 1453],
+			[467,  871,  808,  878, 1060,  557,  311,  260,   0,  328,  679,  794, 1740, 1560, 1590, 1272],
+			[670,  741,  697,  732, 1270,  451,  325,   86, 328,    0, 1005, 905, 1846, 1731, 1784, 1458],
+			[700, 1420, 1340, 1520,  966, 1140,  897,  939,  679, 1005,   0,  878, 1640, 1300, 1370, 1016],
+			[1210, 1630, 1570, 1530, 1720, 1320, 1090,  916,  794,  905,  878,   0,  947,  832,  830,  586],
+			[2130, 2560, 2520, 2430, 2590, 2260, 2040, 1850, 1740, 1846, 1640, 947,  0,  458,  347,  654],
+			[1890, 2430, 2370, 2360, 2270, 2110, 1870, 1730, 1560, 1731, 1300, 832, 458,   0,  112,  299],
+			[1930, 2440, 2390, 2360, 2330, 2130, 1890, 1740, 1590, 1784, 1370, 830,  347,  112,   0,  358],
+			[1592, 2144, 2082, 2194, 1982, 1829, 1580, 1453, 1272, 1458, 1016, 586,  654,  299, 358,    0]]
+#print(costMat)
+
+#	print(c)
+
+#costMat
+#costMat
+csum = 0
+for col in costMat:
+	for item in col:
+		csum += (item*item)
+
+costNorm = np.sqrt(csum)
+#print(costNorm)
+args = sys.argv
+gener = int(args[1])
+slv = int(args[2])
+teamsize = int(args[3])
+random.seed(int(args[4]))
+
+#print(gener, slv, teamsize)
+if teamsize == 0:
+	num = 4
+else:
+	num = (teamsize*2) + 4
+cfile = 'data' + str(num) + '.txt'
+c = open(cfile, 'r')
+#cost = []
+readcos = np.array(c.read().split())
+
+for item in readcos:
+	item = int(item)
+readcos = np.reshape(readcos, (num, num))
+costMat = readcos
+	
+#normMat = normalise_mat(costMat)
+#a = np.array([[3,2,4,-3,-2,-4],[4,-1,-3,-4,1,3],[-1,4,2,1,-4,-2],[-2,-3,-1,2,3,1]])
+#print(a)
+#print(fitness(a))
+#pdb.set_trace()
+#print(normMat)
 #costMat = [[0, 10, 20, 10], [10, 0, 30, 10], [20, 30, 0, 20], [10, 10, 20, 0]]
 
-#S = start()
+
+
+if teamsize == 0:
+	teams = 4
+else:
+	teams = (teamsize*2) + 4
+
+if slv == 0:
+	if gener == 0:
+		file =  './aHC' + 'start1' + '_' + str(teams) + '_' + str(args[4]) + '.dat'
+	elif gener == 1:
+		file =  './aHC' + 'start2' + '_' + str(teams) + '_' + str(args[4]) + '.dat'
+
+	slv = "HC"
+		
+if slv == 1:
+	if gener == 0:
+		file =  './aEA' + 'start1' + '_' + str(teams) + '_' + str(args[4]) + '.dat'
+	elif gener == 1:
+		file =  './aEA' + 'start2' + '-' + str(teams) + '_' + str(args[4]) + '.dat'
+	slv = "EA"
+weeks = (2 * teams) - 2
+f=open(file, 'a')
+#S = start1()
 #print(S)
 #print(cost(S))
 #print(violations(S))
-start_time = time.time()
+#print('exit')
+		
+history = []
+hist = []
+matrices = []
+violation = []
+costs = []
+if gener == 0:
+	gen = start1
+if gener == 1:
+	gen = start2
+budj = (teams*teams) * 100000
 
-fit,ind = solve(start,fitness, solver = "HC",str_trace = True, budget = 1000)
+violation = []
+start_time = time.time()
+fit,ind = solve(gen,fitness, solver = slv,str_trace = True, budget = budj)
+finish_time = time.time() - start_time
 history = solve.data
-print(history)
-print("Solver:",fit,"-----", ind)
-print("Time: ", time.time() - start_time)
+solution = []
+#print(fit)
+for x in fit:
+	for y in x:
+		solution.append(y)
+#print(violations)
+write = str(gen) + '	' + slv + '	' + str(teams) + '	' + str(args[4])+ '	' + str(budj)+ '	' + str(solution) + '	' + str(ind) + '	' + str(history) + '	' + str(violation) + '	' + str(costs) + '\n'
+f.write(write)
+	#print(write)
+
+#fig	 = plt.figure()
+#ax = plt.axes()
+	
+	#print(fit, normMat, ind)
+#ax.plot(history);
+#plt.show()
+f.close()
+#print(history)
+#print("Solver:",fit,"-----", ind)
+#print("Time: ", time.time() - start_time)

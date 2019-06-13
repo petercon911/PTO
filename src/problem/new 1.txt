@@ -1,0 +1,6 @@
+f=open('run_exp.sh', 'a')
+for gen in range(2):
+	for sol in range(2):
+		for size in range(8):
+			for seed in range(10):
+				f.write('Python test.py' + gen + sol + size + seed)
