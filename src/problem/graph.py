@@ -77,7 +77,7 @@ x = np.array((histx[:9], histx[10:19], histx[20:29], histx[30:39])).T
 plt.boxplot(x)
 plt.ylabel('Objective')
 plt.xlabel('Generators')
-plt.title('Best Fitness - Team Size 6')
+plt.title('Best Fitness - Team Size 8')
 index = np.arange(4)
 bar_width = 1
 plt.xticks(index + bar_width, ('HC1', 'HC2', 'EA1', 'EA2'))

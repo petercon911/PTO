@@ -21,6 +21,9 @@ args = sys.argv
 combo = str(args[1])
 type = int(args[2])
 
+fig = plt.figure()
+
+
 f = 'aa' + combo + '.dat'
 f = open(f, 'r')
 
@@ -77,7 +80,8 @@ plt.xlabel('Iterations')
 plt.legend()
 
 #plt.boxplot(histx)
+
 plt.show()
-s = 'graph' + combo + '.svg'
+s = 'graph' + str(combo) + str(type) + '.svg'
 plt.savefig(s)
 	
