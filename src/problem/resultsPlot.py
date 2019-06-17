@@ -11,9 +11,9 @@ sols = []
 endv = []
 endc = []
 a.write('aEAstart2_8_data	')
-for j in range(2):
-	for k in range(2):
-		for l in range(2):
+for j in range(2): # generator
+	for k in range(2): # solver
+		for l in range(2): # teamsize
 			for i in range(10):
 				if j == 0:
 					sol = 'HC'
@@ -47,7 +47,7 @@ for j in range(2):
 				history = history.split(',')
 				violations = violations.split(',')
 				costs = costs.split(',')
-				history[-1].strip('/n')
+				history[-1].strip('\n')
 				#print(int(history[1]))
 
 
