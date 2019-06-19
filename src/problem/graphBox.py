@@ -81,10 +81,10 @@ for tsize in range(2):
 	plt.gcf().subplots_adjust(left=0.15)
 
 	if tsize == 0:
-		plt.title('Best Fitness - Team Size 6')
+		plt.title('Best Fitness - Size 6')
 		s = './BoxPlot/PTO_TTP_Fitness_size6.pdf'
 	if tsize == 1:
-		plt.title('Best Fitness - Team Size 8')
+		plt.title('Best Fitness - Size 8')
 		s = './BoxPlot/PTO_TTP_Fitness_size8.pdf'
 	
 	index = np.arange(4)
